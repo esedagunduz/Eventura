@@ -1,0 +1,113 @@
+﻿@using System.Globalization
+@using System.Security.Claims
+
+<section class="dorne-listing-destinations-area section-padding-100-50">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section-heading dark text-center">
+                    <span></span>
+                    <h4>Festivaller</h4>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <div class="single-features-area mb-50" style="width:340px;height:500px;">
+                        <!-- Tıklanabilir bağlantı -->
+                        <a href="@Url.Action("Details", "Festival", new { id = item.EventId })" style="text-decoration: none; color: inherit;">
+                            <img src="@item.ImageUrl" style="width:340px;height:300px;" alt="">
+                            <div class="price-start">
+                                <p>@item.EventDate.ToString("dd MMMM yyyy", new CultureInfo("tr-TR"))</p>
+                            </div>
+                            <div class="feature-content d-flex align-items-center justify-content-between">
+                                <div class="feature-title">
+                                    <h5>@item.Title</h5>
+                                    <p>@item.Location</p>
+                                </div>
+
+                               <!-- Favori Butonu -->
+                            <div class="feature-favourite">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                <!-- UserId'yi saklayacak öğe -->
+                                <div id="userData" data-user-id="@User.FindFirst(ClaimTypes.NameIdentifier)?.Value" style="display:none;"></div>
+
+                                <a href="javascript:void(0);" onclick="addToFavorites(@item.EventId)">
+                                    <i class="fa fa-heart-o" aria-hidden="true"></i>
+                                </a>
+                                }
+                                else
+                                {
+                                <a href="javascript:void(0);" onclick="showLoginPopup()">
+                                    <i class="fa fa-heart-o" aria-hidden="true"></i>
+                                </a>
+                                }
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Login Popup (Eğer kullanıcı giriş yapmamışsa) -->
+<div id="loginPopup" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(50, 50, 50, 0.8); justify-content: center; align-items: center; color: white; text-align: center; z-index: 9999;">
+    <div style="background-color: rgba(40, 40, 40, 0.95); padding: 20px; border-radius: 8px; width: 300px;">
+        <p style="margin-bottom: 15px;">Favorilere eklemek için giriş yapmanız gerekmektedir.</p>
+        <a href="@Url.Action("SignIn", "Login", new { area = "Member" })" style="color: #fff; text-decoration: none; background-color: rgba(139, 0, 0, 0.99); padding: 12px 20px; border-radius: 5px; display: block; margin-bottom: 10px;">Giriş Yap</a>
+        <button onclick="closeLoginPopup()" style="background-color: rgba(139, 0, 0, 0.99); color: white; padding: 12px 20px; border-radius: 5px; border: none; display: block; width: 100%;">Kapat</button>
+    </div>
+</div>
+
+<script>
+    function addToFavorites(eventId) {
+        var userId = document.getElementById("userData").getAttribute("data-user-id");
+
+        // Eğer kullanıcı giriş yapmamışsa userId null olabilir
+        if (!userId) {
+            alert("Lütfen giriş yapın.");
+            return;
+        }
+
+        // userId'yi string'ten int'e çevirme
+        userId = parseInt(userId, 10); // 10 tabanında dönüştürür
+
+        if (isNaN(userId)) {
+            alert("Geçerli bir kullanıcı kimliği yok.");
+            return;
+        }
+
+        // Burada userId'yi backend'e int olarak gönderebilirsiniz.
+        $.ajax({
+            url: '/Festival/AddToFavorites', // Backend URL
+            type: 'POST',
+            data: {
+                eventId: eventId,
+                userId: userId // Burada userId int olarak backend'e gönderiliyor
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert(response.message); // Başarılı olduğunda mesaj göster
+                } else {
+                    alert(response.message); // Hata mesajı
+                }
+            },
+            error: function () {
+                alert('Bir hata oluştu.');
+            }
+        });
+    }
+
+    function showLoginPopup() {
+        document.getElementById("loginPopup").style.display = "flex";
+    }
+
+    function closeLoginPopup() {
+        document.getElementById("loginPopup").style.display = "none";
+    }
+</script>

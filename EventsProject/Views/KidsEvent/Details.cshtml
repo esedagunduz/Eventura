@@ -1,0 +1,246 @@
+﻿@using EntityLayer.Concrete;
+@model Event
+
+@{
+ViewData["Title"] = "Etkinlik Detayları";
+Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+
+<!-- Preloader -->
+<div id="preloader">
+    <div class="dorne-load"></div>
+</div>
+
+<section class="event-detail-container">
+    <div class="event-detail-wrapper">
+
+        <!-- Event Image -->
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+        <div class="event-image">
+            <img src="@Model.ImageUrl" alt="Event Image" class="img-fluid">
+        </div>
+        }
+
+        <!-- Event Details -->
+        <div class="event-content">
+            <h2 class="event-title">@Model.Title</h2>
+            <div class="event-overview">
+                <p class="event-description">@Model.Description</p>
+                <p class="event-details">@Model.Details</p>
+                <p class="event-date">@Model.EventDate.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</p>
+            </div>
+
+            <!-- Event Location -->
+            <div class="event-location">
+                <strong>Konum:</strong> @Model.Location
+            </div>
+
+            <!-- Google Map -->
+            <div class="event-map">
+                <h3>Haritada Göster</h3>
+                @if (!string.IsNullOrEmpty(Model.LocationUrl))
+                {
+                <iframe src="@Model.LocationUrl" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                }
+                else
+                {
+                <p>Harita bulunamadı.</p>
+                }
+            </div>
+        </div>
+
+        <!-- Sidebar and Buy Ticket -->
+        <div class="event-sidebar">
+            <div class="listing-sidebar">
+
+                <!-- Bilet Al Button -->
+                <div class="listing-verify">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                    <!-- Bilet Al Button -->
+                    <form method="post" action="@Url.Action("BuyTicket", "Stand_Up")">
+                        <input type="hidden" name="eventId" value="@Model.EventId" />
+                        <button type="submit" class="btn dorne-btn w-100 opening-hours-btn">
+                            <i class="fa fa-check pr-3"></i> Bilet Al
+                        </button>
+                    </form>
+
+                    }
+                    else
+                    {
+                    <a href="@Url.Action("SignIn", "Login", new { area = "Member" })" class="btn dorne-btn w-100">
+                        <i class="fa fa-sign-in pr-3"></i> Giriş Yap ve Bilet Al
+                    </a>
+
+                    }
+                </div>
+
+                <!-- Opening Hours Widget -->
+                <div class="opening-hours-widget mt-">
+                    <h6 style="color:white">Açılış Saati</h6>
+                    <ul class="opening-hours text-center">
+                        <li>
+                            <p style="color:white">@Model.EventDate.ToString("HH:mm")</p>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+</body>
+
+</html>
+
+<style>
+    /* General Styles */
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    .event-detail-container {
+        display: flex;
+        justify-content: center;
+        padding: 50px 0;
+    }
+
+    .event-detail-wrapper {
+        width: 90%;
+        max-width: 1200px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* Kutular arasındaki mesafeyi küçültüyoruz */
+    }
+
+    /* Event Image */
+    .event-image {
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 10px;
+    }
+
+    .event-image img {
+        width: 100%;
+        height: auto;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Event Content */
+    .event-content {
+        flex: 1;
+        max-width: 700px;
+    }
+
+    .event-title {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 36px;
+        color: rgba(139, 0, 0, 0.99); /* Etkinlik başlığı rengi */
+        margin-bottom: 20px;
+    }
+
+    .event-overview {
+        margin-bottom: 30px;
+    }
+
+    .event-description, .event-details {
+        font-size: 18px;
+        line-height: 1.6;
+    }
+
+    .event-date {
+        font-size: 20px;
+        font-weight: 600;
+        color: rgba(139, 0, 0, 0.99);
+        margin-top: 20px;
+    }
+
+    .event-location {
+        font-size: 18px;
+        font-weight: 500;
+        margin-top: 30px;
+    }
+
+    .event-map {
+        margin-top: 20px; /* Harita ve içerik arasındaki mesafeyi kısaltıyoruz */
+    }
+
+    .event-map iframe {
+        border-radius: 8px;
+    }
+
+    /* Sidebar */
+    .event-sidebar {
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .listing-verify {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Giriş Yap ve Bilet Al Button */
+    .btn-login, .btn-buy {
+        background-color: rgba(139, 0, 0, 0.99); /* Bordo rengini kullanıyoruz */
+        color: #fff;
+        font-size: 18px;
+        padding: 15px;
+        text-align: center;
+        margin-top: 15px; /* Aradaki boşluğu azaltıyoruz */
+        width: 100%; /* Aynı genişlikte olmalarını sağlıyoruz */
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-login:hover, .btn-buy:hover {
+        background-color: rgba(139, 0, 0, 0.75); /* Hover efekti */
+    }
+
+    /* Opening Hours Widget */
+    .opening-hours-widget {
+        background-color: rgba(139, 0, 0, 0.99); /* Bordo kutu rengi */
+        padding: 15px;
+        margin-top: 10px; /* Kutular arasındaki boşluğu kısaltıyoruz */
+        width: 100%; /* Aynı genişlikte olmalarını sağlıyoruz */
+    }
+
+    .opening-hours-widget h6 {
+        color: white;
+        margin-bottom: 10px;
+    }
+
+    .opening-hours-widget .opening-hours {
+        list-style-type: none;
+        padding: 0;
+        text-align: center;
+    }
+
+    .opening-hours-widget .opening-hours li p {
+        color: white;
+        font-size: 18px;
+    }
+
+</style>

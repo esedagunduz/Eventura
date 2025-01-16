@@ -1,0 +1,117 @@
+﻿@using EntityLayer.Concrete
+@model List<Event>
+
+<section class="dorne-features-events-area bg-img bg-overlay-9 section-padding-100-50" style="background-image: url('https://i.hizliresim.com/j1yb9c8.jpg');">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section-heading text-center">
+                    <span></span>
+                    <h4>Tüm Etkinlikler</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            @foreach (var item in Model)
+            {
+            <div class="col-12 col-lg-6 event-item" style="display: none;">
+                <div class="single-feature-events-area d-sm-flex align-items-center wow fadeInUpBig" data-wow-delay="0.2s">
+                    <div class="feature-events-thumb">
+                        <img src="@item.ImageUrl" alt="">
+                        <div class="date-map-area d-flex">
+                            <a href="#">@item.EventDate.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</a>
+                            <a href="#"><img src="~/dorne-master/img/core-img/map.png" alt=""></a>
+                        </div>
+                    </div>
+                    <div class="feature-events-content">
+                        <h5>@item.Title</h5>
+                        <h6>@item.Location</h6>
+                        <p>@item.Description</p>
+                    </div>
+                    <div class="feature-events-details-btn">
+                        <a href="@Url.Action("Details", "Home", new { id = item.EventId })">+</a>
+                    </div>
+
+                </div>
+            </div>
+            }
+        </div>
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="more-events">
+                    <a href="#" class="more-events-btn">Tümünü Göster</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .more-events {
+        margin-top: 50px;
+    }
+
+    .more-events-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 18px;
+        color: white;
+        background: none;
+        border: none;
+        cursor: pointer;
+        position: relative;
+        transition: color 0.3s;
+    }
+
+    .more-events-btn::after {
+        content: "▼";
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 100%;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .more-events-btn:hover {
+        color: #007bff;
+    }
+
+    .more-events-btn:hover::after {
+        opacity: 1;
+    }
+
+    .more-events-btn:hover::before {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: white;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const eventItems = document.querySelectorAll('.event-item');
+        const showMoreButton = document.querySelector('.more-events-btn');
+        const itemsToShow = 6;
+
+        eventItems.forEach((item, index) => {
+            if (index < itemsToShow) {
+                item.style.display = 'block';
+            }
+        });
+
+        showMoreButton.addEventListener('click', function (e) {
+            e.preventDefault();
+            eventItems.forEach(item => {
+                item.style.display = 'block';
+            });
+            showMoreButton.parentElement.style.display = 'none';
+        });
+    });
+</script>
