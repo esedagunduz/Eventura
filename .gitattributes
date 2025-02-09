@@ -1,8 +1,2 @@
-*.cs linguist-detectable=true
-*.csproj linguist-detectable=true
-*.sln linguist-detectable=true
-*.html linguist-detectable=false
-*.scss linguist-detectable=false
-*.xml linguist-detectable=false
-*.js linguist-detectable=false
-*.css linguist-detectable=false
+# Auto detect text files and perform LF normalization
+* text=auto
